@@ -1,18 +1,28 @@
 import boto3 as boto3
 import cv2
-
+import numpy as np
 
 image_name = 'tmp.png'
+brightness = 0.5
+
+
+def change_brightness(img, alpha, beta):
+    return cv2.addWeighted(img, alpha, np.zeros(img.shape, img.dtype), 1, beta)
 
 
 def take_picture(img_name):
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(1)
     ret, frame = cam.read()
+    frame = change_brightness(frame, brightness, 0)
+
     cv2.imwrite(img_name, frame)
     print("{} written!".format(img_name))
     cam.release()
-    cv2.destroyAllWindows()
 
+font_emotions = cv2.FONT_ITALIC
+font_emotions_scale = 0.5
+font_emotions_color = (0, 128, 255)
+lineType = 1
 
 while True:
     take_picture(image_name)
@@ -41,6 +51,15 @@ while True:
         top = face.get('BoundingBox').get('Top')
         gender = face.get('Gender').get('Value')
 
+        emotions_dict = {}
+        for item in face.get('Emotions'):
+            type = item['Type']
+            emotions_dict[type] = item['Confidence']
+
+        calm = str(int(emotions_dict.get('CALM', 0)))
+        surprised = str(int(emotions_dict.get('SURPRISED', 0)))
+        confused = str(int(emotions_dict.get('CONFUSED', 0)))
+
         im_height, im_width, channels = img.shape
 
         face_width = int(width * im_width)
@@ -55,12 +74,20 @@ while True:
             female +=1
             color = (147, 112, 219)
         img = cv2.rectangle(img, (face_left_position, face_top_position), (face_left_position+face_width, face_height+face_top_position), color, 5)
+        feelings = f'calm {calm}%, surprised {surprised}%, confused {confused}%'
+        bottomLeftCornerOfText = (face_left_position, face_top_position - 10)
+        cv2.putText(img, feelings, bottomLeftCornerOfText, font_emotions, font_emotions_scale, font_emotions_color, lineType)
 
+    if male+female == 0:
+        cv2.imshow("window", img)
+        cv2.moveWindow('window', 200, 200)
+        cv2.waitKey(1)
+        continue
     female_percentage = (female / float(male+female)) * 100
     male_percentage = (male / float(male+female)) * 100
 
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    bottomLeftCornerOfText = (10, 700)
+    font = cv2.FONT_HERSHEY_TRIPLEX
+    bottomLeftCornerOfText = (10, 50)
     fontScale = 1
     fontColor = (255, 0, 0)
     lineType = 2
@@ -74,5 +101,3 @@ while True:
     cv2.imshow("window", img)
     cv2.moveWindow('window', 200, 200)
     cv2.waitKey(1)
-
-
