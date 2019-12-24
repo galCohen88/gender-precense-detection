@@ -2,8 +2,9 @@ import boto3 as boto3
 import cv2
 import numpy as np
 
-image_name = 'tmp.png'
-brightness = 0.5
+
+image_name = 'c.jpg'
+brightness = 0.9
 
 
 def change_brightness(img, alpha, beta):
@@ -22,10 +23,10 @@ def take_picture(img_name):
 font_emotions = cv2.FONT_ITALIC
 font_emotions_scale = 0.5
 font_emotions_color = (0, 128, 255)
-lineType = 1
+lineType = 2
 
 while True:
-    take_picture(image_name)
+    # take_picture(image_name)
     with open(image_name, 'rb') as f: # open the file in read binary mode
         data = f.read()
 
@@ -74,9 +75,15 @@ while True:
             female +=1
             color = (147, 112, 219)
         img = cv2.rectangle(img, (face_left_position, face_top_position), (face_left_position+face_width, face_height+face_top_position), color, 5)
-        feelings = f'calm {calm}%, surprised {surprised}%, confused {confused}%'
-        bottomLeftCornerOfText = (face_left_position, face_top_position - 10)
-        cv2.putText(img, feelings, bottomLeftCornerOfText, font_emotions, font_emotions_scale, font_emotions_color, lineType)
+        calm = f'calm {calm}%'
+        surprised = f'surprised {surprised}%'
+        confused = f'confused {confused}%'
+        bottomLeftCornerOfText = (face_left_position+face_width+10, face_top_position + 40)
+        cv2.putText(img, calm, bottomLeftCornerOfText, font_emotions, font_emotions_scale, font_emotions_color, lineType)
+        bottomLeftCornerOfText = (face_left_position+face_width+10, face_top_position + 25)
+        cv2.putText(img, surprised, bottomLeftCornerOfText, font_emotions, font_emotions_scale, font_emotions_color, lineType)
+        bottomLeftCornerOfText = (face_left_position+face_width+10, face_top_position + 10)
+        cv2.putText(img, confused, bottomLeftCornerOfText, font_emotions, font_emotions_scale, font_emotions_color, lineType)
 
     if male+female == 0:
         cv2.imshow("window", img)
