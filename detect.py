@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 
-image_name = 'c.jpg'
+image_name = 'tmp.jpg'
 brightness = 0.9
 
 
@@ -26,7 +26,7 @@ font_emotions_color = (0, 128, 255)
 lineType = 2
 
 while True:
-    # take_picture(image_name)
+    take_picture(image_name)
     with open(image_name, 'rb') as f: # open the file in read binary mode
         data = f.read()
 
@@ -96,7 +96,7 @@ while True:
     font = cv2.FONT_HERSHEY_TRIPLEX
     bottomLeftCornerOfText = (10, 50)
     fontScale = 1
-    fontColor = (255, 0, 0)
+    fontColor = (0, 255, 0)
     lineType = 2
 
     cv2.putText(img, 'Male percentage ' + str(int(male_percentage)) + ' Female percentage: ' + str(int(female_percentage)),
