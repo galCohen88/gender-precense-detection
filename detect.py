@@ -1,10 +1,17 @@
 import boto3 as boto3
 import cv2
 
-from image_capture import take_picture
-
 
 image_name = 'tmp.png'
+
+
+def take_picture(img_name):
+    cam = cv2.VideoCapture(0)
+    ret, frame = cam.read()
+    cv2.imwrite(img_name, frame)
+    print("{} written!".format(img_name))
+    cam.release()
+    cv2.destroyAllWindows()
 
 
 while True:
@@ -67,3 +74,5 @@ while True:
     cv2.imshow("window", img)
     cv2.moveWindow('window', 200, 200)
     cv2.waitKey(1)
+
+
