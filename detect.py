@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 
 
+
 image_name = 'tmp.jpg'
 brightness = 0.9
 
@@ -25,8 +26,12 @@ font_emotions_scale = 0.5
 font_emotions_color = (0, 128, 255)
 lineType = 2
 
+total_calm = 0
+total_confused = 0
+total_surprised = 0
+
 while True:
-    take_picture(image_name)
+    # take_picture(image_name)
     with open(image_name, 'rb') as f: # open the file in read binary mode
         data = f.read()
 
@@ -75,6 +80,11 @@ while True:
             female +=1
             color = (147, 112, 219)
         img = cv2.rectangle(img, (face_left_position, face_top_position), (face_left_position+face_width, face_height+face_top_position), color, 5)
+
+        total_calm += int(calm)
+        total_confused += int(confused)
+        total_surprised += int(surprised)
+
         calm = f'calm {calm}%'
         surprised = f'surprised {surprised}%'
         confused = f'confused {confused}%'
@@ -99,7 +109,10 @@ while True:
     fontColor = (0, 255, 0)
     lineType = 2
 
-    cv2.putText(img, 'Male percentage ' + str(int(male_percentage)) + ' Female percentage: ' + str(int(female_percentage)),
+    cv2.putText(img, str(int(male_percentage)) + '% Male, ' + str(int(female_percentage))
+                + '% Female, % Avg calm: ' + str(int(total_calm/float(male+female)))
+                + ', % Avg surprised: ' + str(int(total_surprised/float(male+female)))
+                + ', % Avg confused: ' + str(int(total_confused / float(male + female))),
                 bottomLeftCornerOfText,
                 font,
                 fontScale,
